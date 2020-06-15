@@ -1,8 +1,12 @@
+# hidden files
+.Rhistory
+
+# auxiliary folders
 relinf/
 LATER/
 literature/
 
-.Rhistory
-
-.*~
-^zz**
+# scratch and backup files
+# /01*.R
+/zz*.*
+/*.*~
