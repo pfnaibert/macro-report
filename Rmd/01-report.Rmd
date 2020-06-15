@@ -1,0 +1,97 @@
+--- 
+title: "GDP para Setembro de 2019" 
+date: '`r format(Sys.time(), "%d, %B, %Y")`'
+# author: "Paulo Ferreira Naibert and Matheus Torma da Silveira"
+--- 
+
+```{r, setup, include=FALSE}
+# packages
+library(knitr)
+knitr::opts_chunk$set(fig.height=5, fig.width=9.5) 
+
+library(stargazer)
+library(xtable)
+library(dygraphs)
+
+source("./01-downloads.R")
+source("./funs-macro.R")
+```
+
+# GDP LEVEL
+
+```{r, echo=FALSE}
+# TAB GDP LEVEL in trillions of current reais 
+
+kable(tab.gdp.level(gdp$nominal), digits=2, caption="GDP in trillions of current reais")
+```
+
+
+```{r, echo=FALSE, message=FALSE, fig.cap=""}
+# GDP and log trends
+
+fig.gdp.log(gdp$real.seas, pot)
+```
+
+```{r, echo=FALSE}
+# GDP and linear trends
+
+fig.gdp.lin(gdp$real.seas, pot)
+
+```
+
+# GDP GAP
+
+```{r, echo=FALSE}
+# GAP of GDP in dif
+
+fig.gap.dif(gap$dif)
+
+```
+
+
+```{r, echo=FALSE}
+# GAP of GDP in pct
+
+fig.gap.pct(gap$pct)
+
+```
+
+# GDP GROWTH
+
+```{r, tab-gdp-growth, echo=FALSE}
+# GDP growth lin est
+g <- lin.trend(log(gdp$real.seas))[2]
+
+# TAB GDP GROWTH
+kable(tab.gdp.growth(gdp, "2016:Q1", "2019:Q2"), digits=1,  caption="GDP GROWTH by QUARTER")
+
+```
+
+
+```{r, tab-gdp-growth-years, echo=FALSE}
+# Tab GDP growth years
+
+kable(tab.gdp.growth.y(gdp$acret4, "2012", "2018"), digits = 1, caption="YEARLY GDP GROWTH")
+```
+
+In the linear regression of GPD against time, the slope coefficient comes as $`r round(g,2)`$.
+When we exponentiate and multiply by $100$, we arrive at a quarterly growth rate of $`r round( 100*(exp(g)-1), 2)`$, this mean an annualized rate of $`r round( 100*(exp(4*g)-1), 2)`$.
+
+
+```{r, fig-gdp-ac4, echo=FALSE, message=FALSE, fig.cap="A CAPTION"}
+# PLOT GDP AC 4Q
+
+fig.gdp.ac4(gdp$acret4)
+```
+
+```{r, echo=FALSE, message=FALSE}
+# PLOT GDP INDEX seasonal adjustment t/t-1
+
+fig.gdp.t1(gdp$real.seas, gdp$ret1, "2018:Q4")
+```
+
+```{r, echo=FALSE, message=FALSE}
+# PLOT GDP AC 4Q t/t-4
+
+fig.gdp.t4(gdp$ac, gdp$ret4, "2018:Q4")
+```
