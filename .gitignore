@@ -8,5 +8,5 @@ literature/
 
 # scratch and backup files
 # /01*.R
-/zz*.*
-/*.*~
+*/zz*.*
+*/*.*~
