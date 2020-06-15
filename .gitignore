@@ -8,5 +8,6 @@ literature/
 
 # scratch and backup files
 # /01*.R
+*/tmp*.*
 */zz*.*
 */*.*~
