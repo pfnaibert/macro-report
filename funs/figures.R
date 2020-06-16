@@ -1,35 +1,3 @@
-#######################################################
-# TAB NOMINAL GDP
-tab.gdp.level <- function(data, year, qtr)
-{
-# Nominal GDP in trillions of current reais 
-
-newdata <- as.numeric(data)
-
-# Nominal
-yq1   <- tail(newdata,1)/10^6       # current quarter
-yq2   <- head(tail(newdata,5),1)/10^6 # current quarter of last year
-yq4   <- sum(tail(newdata,4))/10^6  # current sum of the last 4 quarters
-
-# subset dates
-dates <- names(data)
-
-id1 <- grep(paste(year), dates)   # current year
-id2 <- grep(paste(year-1), dates) # previous year 
-
-yt1 <- sum(newdata[id1])/10^6 # current year
-yt2 <- sum(newdata[id2])/10^6 # previous year 
-
-# bind values
-tab1 <- c(yq1, yq2, 4*yq1, yq4, yt2)
-names(tab1) <- c("current quarter", "t-4", "current quarter x4", "last 4 quarters", "last year")
-
-# tab1 <- c(y2018, y2019, 2*y2019)
-# names(tab1) <- c(paste(year-1), paste(year), paste(year, "2"))
-
-return(t(tab1))
-}
-
 ####################################################
 # GDP FIGS
 
@@ -153,51 +121,6 @@ dygraph(tmp,
     dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
     dyBarSeries("t/t-4") %>% 
     dyOptions(includeZero = TRUE)
-}
-
-####################################################
-# GDP TABS
-
-#######################################################
-# TAB GDP Growth
-
-tab.gdp.growth <- function(data, date1, date2)
-{
-# Tab GDP growth quarters
-
-# dates 
-dates <- names(data$ret1)
-id1   <- grep(date1, dates)
-id2   <- grep(date2, dates)
-
-# bind series
-tmp <- cbind(data$ret1, data$ret4, data$acret4)
-colnames(tmp) <- c("t/t-1", "t/t-4", "ac t/t-4")
-rownames(tmp) <- dates
-
-# subset    
-tab <- tmp[id1:id2,]
-# tab <- window(tmp, start = date1, end = date2)
-
-return(tab)
-}
-
-#######################################################
-# TAB GDP Growth
-
-tab.gdp.growth.y <- function(data, year1, year2)
-{
-# Tab GDP growth years
-
-tmp        <- data[grep("Q4", names(data))]
-names(tmp) <- substring(names(tmp), 1, 4)
-
-# dates subset
-id1 <- grep(year1, names(tmp))
-id2 <- grep(year2, names(tmp))
-tab <- tmp[id1:id2]
-
-return(t(tab))
 }
 
 #######################################################
