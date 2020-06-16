@@ -1,4 +1,22 @@
 ####################################################
+# QUARTER FUNCTIONS
+
+####################################################
+# QUARTER DATES
+date.quarter <- function(data)
+{
+T <- NROW(data); dates <- names(data)
+
+# dates as numeric for TS
+Y <- as.numeric(substring(dates, 1,4))
+Q <- as.numeric(substring(dates, 7,7)) 
+
+# Time Series
+newdata <- ts(data, start = c(Y[1], Q[1]), end = c(Y[T], Q[T]), frequency = 4)
+return(newdata)
+}
+
+####################################################
 # ac4Q # QUARTER
 sum4 <- function(data)
 {
@@ -12,6 +30,18 @@ for(i in 1:(T-3))
 }
 
 return(date.quarter(tmp))
+}
+
+####################################################
+# ret (t/t-1) # QUARTER
+ret1.q <- function(data)
+{
+T <- NROW(data)
+tmp1 <- data[-1]; tmp2 <- data[-T]
+ret  <- 100*(tmp1/tmp2 - 1)
+names(ret[-1]) <- dates
+
+return(date.quarter(ret))
 }
 
 ####################################################
@@ -40,62 +70,6 @@ dif  <- tmp1 - tmp2
 names(dif[-3]) <- dates
 
 return(date.quarter(dif))
-}
-
-####################################################
-# ret (t/t-1) # QUARTER
-ret1.q <- function(data)
-{
-T <- NROW(data)
-tmp1 <- data[-1]; tmp2 <- data[-T]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret[-1]) <- dates
-
-return(date.quarter(ret))
-}
-
-####################################################
-# sum 12 meses # MONTH
-sum12 <- function(data)
-{
-T     <- NROW(data); dates <- names(data)
-sum.12 <- rep(NA, T-11)
-
-for(i in 1:(T-11))
-{
-    w1       <- seq(i,i+12-1)
-    sum.12[i] <- sum(data[w1])/12
-}
-names(sum.12) <- dates[-c(1:11)]
-
-return(date.month(sum.12) )
-}
-
-####################################################
-# ret t/t-12 # MONTH
-ret12 <- function(data)
-{
-T    <- NROW(data); dates <- names(data)
-
-id1  <- seq(1:12); id2  <- seq(T-11, T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret) <- dates[-id1]
-
-return(date.month(ret) )
-}
-
-####################################################
-# ret t/t-1 # MONTH
-ret1.m <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-
-tmp1 <- data[-1]; tmp2 <- data[-T]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret) <- dates[-1]
-
-return(date.month(ret) )
 }
 
 ####################################################
@@ -248,3 +222,4 @@ standard <- function(data)
 {
 return((data-mean(data))/sd(data))
 }
+

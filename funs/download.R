@@ -1,9 +1,10 @@
 #######################################################
 # DOWNLOADS 
 
+
 ################################################
 # Download GDP long series
-download.cnt.series <- function()
+download.gdp <- function()
 {
 
 # urls
@@ -16,12 +17,6 @@ download.file(url1, "../data/CNT-SIDRA-1846.csv") # current values
 download.file(url2, "../data/CNT-SIDRA-6612.csv") # chained BRL from 1995 NSA
 download.file(url3, "../data/CNT-SIDRA-6613.csv") # chained BRL from 1995 SA
 
-return(1)
-}
-
-####################################################
-load.gdp <- function()
-{
 # load trim CSV
 x1 <- load.trim("../data/CNT-SIDRA-1846.csv", 5, 9) # nominal 
 x2 <- load.trim("../data/CNT-SIDRA-6612.csv", 5, 9) # 1995=100 NSA
@@ -40,7 +35,38 @@ data1 <- date.quarter(data1)
 data2 <- date.quarter(data2)
 data3 <- date.quarter(data3)
 
-return(list("nominal"=data1, "real.NSA"=data2, "real.SA"=data3))
+gdp.list <- list("nominal"=data1, "real.NSA"=data2, "real.SA"=data3)
+
+# SAVE in RDS
+saveRDS(gdp.list,  "../data/gdp.rds" )
+
+return(1)
+}
+
+####################################################
+load.gdp <- function()
+{
+gdp <- readRDS("../data/gdp.rds" )
+gdp[["ret1"]]           = ret1.q(gdp$real.SA)
+gdp[["ret4"]]           = ret4(gdp$real.NSA)
+gdp[["sum4.nominal"]]   = sum4(gdp$nominal)
+gdp[["sum4.real"]]      = sum4(gdp$real.NSA)
+gdp[["ret.ac4q.nominal"]] = ret4(sum4(gdp$nominal))
+gdp[["ret.ac4q.real"]]    = ret4(sum4(gdp$real.NSA)) 
+
+return(gdp)
+}
+
+####################################################
+# LOAD files
+load.trim <- function(filename, nhead, ntail)
+{
+# load trimmed files without the first nhead lines and the last ntail lines
+# trim head
+data <- read.csv(filename, stringsAsFactors = F, skip = nhead, header = F, sep = ",")
+# trim tail
+newdata <- head(data, -ntail)
+return(newdata)
 }
 
 ################################################
@@ -52,14 +78,14 @@ download.ipca <- function()
 url1 <- "https://sidra.ibge.gov.br/geratabela?format=us.csv&name=tabela1737.csv&terr=N&rank=-&query=t/1737/n1/all/v/2266/p/all/d/v2266%2013/l/v%2Bt,,p"
 
 # Download Data CSV
-download.file(url1, "./data/IPCA-SIDRA-1737.csv") 
+download.file(url1, "../data/IPCA-SIDRA-1737.csv") 
 
 # Load Data into R
-ipca  <- load.trim("./data/IPCA-SIDRA-1737.csv", 4, 11)
+ipca  <- load.trim("../data/IPCA-SIDRA-1737.csv", 4, 11)
 ipca1 <- date.month.SIDRA(ipca)
 
 # SAVE in RDS
-saveRDS(ipca1,  "./data-R/ipca.rds" )
+saveRDS(ipca1,  "../data/ipca.rds" )
 
 return(1)
 }
@@ -70,7 +96,7 @@ download.pimpfbr <- function()
 {
 
 # 
-filename <- "./data/PIMPFBR-SIDRA-3653.csv"
+filename <- "../data/PIMPFBR-SIDRA-3653.csv"
 
 # urls
 url1 <- "https://sidra.ibge.gov.br/geratabela?format=us.csv&name=tabela3653.csv&terr=N&rank=-&query=t/3653/n1/all/v/3134,3135,3138/p/all/c544/129314/d/v3134%201,v3135%201,v3138%201/l/t%2Bc544,v,p"
@@ -88,7 +114,7 @@ ind3  <- fun.month.SIDRA(data[-seq(1,23),c(1,4)]) - 100
 ind   <- list(ind1, ind2, ind3); names(ind) <- c("NSA", "SA", "ac12")
 
 # SAVE in RDS
-saveRDS(ind,  "./data-R/ind.rds" )
+saveRDS(ind,  "../data/ind.rds" )
 
 return(1)
 }
@@ -99,7 +125,7 @@ download.pmc <- function()
 {
 
 # 
-filename <- "./data/PMC-SIDRA-3416.csv"
+filename <- "../data/PMC-SIDRA-3416.csv"
 
 # urls
 url1 <- "https://sidra.ibge.gov.br/geratabela?format=us.csv&name=tabela3416.csv&terr=N&rank=-&query=t/3416/n1/all/v/564/p/all/c11046/40311,40312/d/v564%201/l/v%2Bt,c11046,p"
@@ -116,7 +142,7 @@ data2  <- fun.month.SIDRA(data[,c(1,3)])
 newdata <- list(data1, data2); names(newdata) <- c("NSA", "SA")
 
 # SAVE in RDS
-saveRDS(newdata,  "./data-R/pmc.rds" )
+saveRDS(newdata,  "../data/pmc.rds" )
 
 return(1)
 }
@@ -127,7 +153,7 @@ download.pms <- function()
 {
 
 # 
-filename <- "./data/PMS-SIDRA-6442.csv"
+filename <- "../data/PMS-SIDRA-6442.csv"
 
 # urls
 url1 <- "https://sidra.ibge.gov.br/geratabela?format=us.csv&name=tabela6442.csv&terr=N&rank=-&query=t/6442/n1/all/v/8677/p/all/c11046/40311,40312/d/v8677%201/l/t%2Bv,c11046,p"    
@@ -144,7 +170,7 @@ data2  <- fun.month.SIDRA(data[,c(1,3)])
 newdata <- list(data1, data2); names(newdata) <- c("NSA", "SA")
 
 # SAVE in RDS
-saveRDS(newdata,  "./data-R/pms.rds" )
+saveRDS(newdata,  "../data/pms.rds" )
 
 return(1)
 }
@@ -155,10 +181,10 @@ download.ibc <- function()
 {
 
 # 
-file1 <- "./data/IBC-SGS-24363.csv"
-file2 <- "./data/IBC-SGS-24364.csv"
+file1 <- "../data/IBC-SGS-24363.csv"
+file2 <- "../data/IBC-SGS-24364.csv"
 
-# urls
+# urs
 url1 <- "http://api.bcb.gov.br/dados/serie/bcdata.sgs.24363/dados?formato=csv"
 url2 <- "http://api.bcb.gov.br/dados/serie/bcdata.sgs.24364/dados?formato=csv"
 
@@ -178,7 +204,7 @@ y  <- list(x1, x2)
 names(y) <- c("NSA", "SA")
 
 # SAVE in RDS
-saveRDS(y,  "./data-R/IBC.rds" )
+saveRDS(y,  "../data/IBC.rds" )
 
 return(1)
 }
@@ -189,10 +215,10 @@ download.selic <- function()
 {
 
 # 
-file1 <- "./data/SELIC-SGS-11.csv"
-file2 <- "./data/SELIC-SGS-1178.csv"
-file3 <- "./data/SELIC-SGS-432.csv"
-file4 <- "./data/SELIC-SGS-4189.csv"
+file1 <- "../data/SELIC-SGS-11.csv"
+file2 <- "../data/SELIC-SGS-1178.csv"
+file3 <- "../data/SELIC-SGS-432.csv"
+file4 <- "../data/SELIC-SGS-4189.csv"
 
 # urls
 url1 <- "https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=csv"   # selic diaria
@@ -210,25 +236,10 @@ return(1)
 }
 
 ####################################################
-# LOAD files
-load.trim <- function(filename, nhead, ntail)
-{
-
-# trim head
-data <- read.csv(filename,stringsAsFactors = F,skip=nhead,header=F, sep=",")
-    
-# trim tail
-newdata <- head(data, -ntail)
-
-return(newdata)
-}
-
+# DATES
 
 ####################################################
-# QUARTER FUNCTIONS
-
-####################################################
-# QUARTER DATES
+# quarter
 date.quarter <- function(data)
 {
 T <- NROW(data); dates <- names(data)
@@ -243,63 +254,7 @@ return(newdata)
 }
 
 ####################################################
-# ac4Q # QUARTER
-sum4 <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-tmp <- rep(NA, (T-3)); names(tmp) <- dates[-seq(1:3)]
-
-for(i in 1:(T-3))
-{
-    w1     <- seq(i,i+4-1)
-    tmp[i] <- sum(data[w1])
-}
-
-return(date.quarter(tmp))
-}
-
-####################################################
-# ret (t/t-1) # QUARTER
-ret1.q <- function(data)
-{
-T <- NROW(data)
-tmp1 <- data[-1]; tmp2 <- data[-T]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret[-1]) <- dates
-
-return(date.quarter(ret))
-}
-
-####################################################
-# ret (t/t-4) # QUARTER
-ret4 <- function(data)
-{
-T    <- NROW(data); dates <- names(data)
-
-id1  <- seq(1,4); id2 <- seq(T-3,T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret[-4]) <- dates
-
-return(date.quarter(ret))
-}
-
-####################################################
-# y(t) - y(t-4) # QUARTER
-dif4 <- function(data)
-{
-T    <- NROW(data)
-
-id1  <- seq(1,4); id2 <- seq(T-3,T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-dif  <- tmp1 - tmp2
-names(dif[-3]) <- dates
-
-return(date.quarter(dif))
-}
-
-####################################################
-# MONTH DATES
+# month
 date.month <- function(data)
 {
 T <- NROW(data); dates <- names(data)
@@ -310,7 +265,6 @@ return(newdata)
 }
 
 ####################################################
-# MONTH
 date.month.SIDRA <- function(data)
 {
 # IPCA DATES (%B %Y) to %Y:%m
@@ -361,6 +315,66 @@ return(newdata)
 }
 
 ####################################################
+# SUMS and Returns
+
+
+####################################################
+# ac4Q # QUARTER
+sum4 <- function(data)
+{
+T <- NROW(data); dates <- names(data)
+tmp <- rep(NA, (T-3)); names(tmp) <- dates[-seq(1:3)]
+
+for(i in 1:(T-3))
+{
+    w1     <- seq(i,i+4-1)
+    tmp[i] <- sum(as.numeric(data[w1]))
+}
+
+return(date.quarter(tmp))
+}
+
+####################################################
+# ret (t/t-4) # QUARTER
+ret4 <- function(data)
+{
+T    <- NROW(data); dates <- names(data)
+
+id1  <- seq(1,4); id2 <- seq(T-3,T)
+tmp1 <- as.numeric(data[-id1]); tmp2 <- as.numeric(data[-id2])
+ret  <- 100*(tmp1/tmp2 - 1)
+names(ret) <- dates[-id1]
+
+return(date.quarter(ret))
+}
+
+####################################################
+# y(t) - y(t-4) # QUARTER
+dif4 <- function(data)
+{
+T    <- NROW(data); dates <- names(data)
+
+id1  <- seq(1,4); id2 <- seq(T-3,T)
+tmp1 <- data[-id1]; tmp2 <- data[-id2]
+dif  <- as.numeric(tmp1) - as.numeric(tmp2)
+names(dif) <- dates[-id1]
+
+return(date.quarter(dif))
+# return(list("values"=ret, "dates"=dates[-id1]))
+}
+
+####################################################
+ret1.q <- function(data)
+{
+T <- NROW(data); dates <- names(data)
+tmp1 <- as.numeric(data[-1]); tmp2 <- as.numeric(data[-T])
+ret  <- 100*(tmp1/tmp2 - 1)
+names(ret) <- dates[-1]
+
+return(date.quarter(ret))
+}
+
+####################################################
 # sum 12 meses # MONTH
 sum12 <- function(data)
 {
@@ -392,6 +406,20 @@ return(date.month(ret) )
 }
 
 ####################################################
+# dif y(t) - y(t-12) # MONTH
+dif12 <- function(data)
+{
+T    <- NROW(data); dates <- names(data)
+
+id1  <- seq(1:12); id2  <- seq(T-11, T)
+tmp1 <- data[-id1]; tmp2 <- data[-id2]
+dif  <- tmp1 - tmp2 
+names(dif) <- dates[-id1]
+
+return(date.month(dif) )
+}
+
+####################################################
 # ret t/t-1 # MONTH
 ret1.m <- function(data)
 {
@@ -401,7 +429,7 @@ tmp1 <- data[-1]; tmp2 <- data[-T]
 ret  <- 100*(tmp1/tmp2 - 1)
 names(ret) <- dates[-1]
 
-return(date.month(ret) )
+return(date.month(ret))
 }
 
 ####################################################
@@ -418,6 +446,21 @@ ac.yr <- function(index, year)
 {
 id <- grep(year, names(index) )
 return(100*(index[tail(id,1)]/index[(head(id,1)-1)] -1 ) )
+}
+
+####################################################
+normalize <- function(data, date)
+{
+T <- NROW(data)
+den <- rep(data[date], T)
+newdata <- 100*data/den
+return(newdata)
+}
+
+####################################################
+standard <- function(data)
+{
+return((data-mean(data))/sd(data))
 }
 
 ####################################################
@@ -539,332 +582,4 @@ gg <- ret1.q(data) - g
 
 return(list("fit"=t1, "dif"=c1, "pct"=c2, "g"=g, "gg"=gg)) 
 }
-
 ####################################################
-normalize <- function(data, date)
-{
-T <- NROW(data)
-den <- rep(data[date], T)
-newdata <- 100*data/den
-return(newdata)
-}
-
-####################################################
-standard <- function(data)
-{
-return((data-mean(data))/sd(data))
-}
-
-
-####################################################
-# GDP FIGS
-
-####################################################
-# GDP and log trends
-
-fig.gdp.log <- function(gdp, trend)
-{
-tmp  <- cbind(log(gdp), trend)
-rownames(tmp) <- names(gdp); colnames(tmp) <- c("GDP", "linear", "quad", "HP")
-
-dygraph(tmp, main = "Log of GDP in Reais of 1995 with Seasonal Adjustment and Trends") %>%
-    dyLimit(0,   color = "black") %>%
-    dyLimit(100, color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom")
-}
-
-#######################################################
-# GDP and linear trends
-
-fig.gdp.lin <- function(gdp, trend)
-{
-tmp  <- cbind(gdp, exp(pot))
-rownames(tmp) <- names(y); colnames(tmp) <- c("GDP", "linear", "quad", "HP")
-
-dygraph(tmp, main = "GDP in Reais of 1995 with Seasonal Adjustment and Trends") %>%
-    dyLimit(0,   color = "black") %>%
-    dyLimit(100, color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom")
-}
-
-#######################################################
-# GAP of GDP in dif
-
-fig.gap.dif <- function(data)
-{
-dygraph(data, main = "GAP of GDP in Reais of 1995") %>%
-    dyLimit(0,   color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom")
-}
-
-#######################################################
-# GAP of GDP in pct
-
-fig.gap.pct <- function(data)
-{
-dygraph(data, main = "GAP of GDP PCT of ACTUAL GDP ") %>%
-    dyLimit(0,   color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom")
-}
-
-#######################################################
-# PLOT GDP AC 4Q
-
-fig.gdp.ac4 <- function(data)
-{
-dygraph(data, main = "Index GDP in Reais of 1995 AC 4Q 2018:Q4=100") %>%
-    dySeries(label = "AC t/t-4") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyBarChart() %>%
-    dyOptions(includeZero = TRUE)
-}
-
-#######################################################
-# PLOT GDP INDEX SA
-
-fig.gdp.t1 <- function(gdp, ret, date)
-{
-tmp <- normalize(gdp, date)
-tmp <- cbind(tmp, ret); colnames(tmp) <- c("gdp","t/t-1")
-
-dygraph(tmp,
-        main = paste0("Index GDP in Reais of 1995 SA ", date, "=100") ) %>%
-    dyLimit(0,   color = "black") %>%
-    dyLimit(100, color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyBarSeries("t/t-1") %>% 
-    dyOptions(includeZero = TRUE)
-}
-
-#######################################################
-# PLOT GDP AC 4Q
-
-fig.gdp.t4 <- function(gdp, ret, date)
-{
-tmp <- normalize(gdp, date)
-tmp <- cbind(tmp, ret); colnames(tmp) <- c("gdp","t/t-4")
-
-dygraph(tmp,
-        main = paste0("Index GDP in Reais of 1995 AC 4Q ", date, "=100") ) %>%
-    dyLimit(0,   color = "black") %>%
-    dyLimit(100, color = "black") %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyBarSeries("t/t-4") %>% 
-    dyOptions(includeZero = TRUE)
-}
-
-####################################################
-# GDP TABS
-
-#######################################################
-# TAB NOMINAL GDP
-tab.gdp.level <- function(data)
-{
-# Nominal GDP in trillions of current reais 
-
-# subset dates
-dates <- names(data)
-id.2018 <- grep("2018", dates)
-id.2019 <- grep("2019", dates)
-
-# Nominal
-yq1   <- tail(data,1)/10^6       # last quarter
-yq4   <- sum(tail(data,4))/10^6  # last 4 quarters
-y2018 <- sum(data[id.2018])/10^6 # 2018 
-y2019 <- sum(data[id.2019])/10^6 # 2019 so far
-
-# bind values
-tab1 <- c(y2018, yq4, yq1, 4*yq1, y2019, 2*y2019)
-names(tab1) <- c("2018", "4 quarters", "last quarter", "last quarter x4","2019", "2019 x2")
-
-return(t(tab1))
-}
-
-#######################################################
-# TAB GDP Growth
-
-tab.gdp.growth <- function(data, date1, date2)
-{
-# Tab GDP growth quarters
-
-# dates 
-dates <- names(data$ret1)
-id1   <- grep(date1, dates)
-id2   <- grep(date2, dates)
-
-# bind series
-tmp <- cbind(data$ret1, data$ret4, data$acret4)
-colnames(tmp) <- c("t/t-1", "t/t-4", "ac t/t-4")
-rownames(tmp) <- dates
-
-# subset    
-tab <- tmp[id1:id2,]
-# tab <- window(tmp, start = date1, end = date2)
-
-return(tab)
-}
-
-#######################################################
-# TAB GDP Growth
-
-tab.gdp.growth.y <- function(data, year1, year2)
-{
-# Tab GDP growth years
-
-tmp        <- data[grep("Q4", names(data))]
-names(tmp) <- substring(names(tmp), 1, 4)
-
-# dates subset
-id1 <- grep(year1, names(tmp))
-id2 <- grep(year2, names(tmp))
-tab <- tmp[id1:id2]
-
-return(t(tab))
-}
-
-#######################################################
-# FIG IPCA
-
-#######################################################
-# PLOT IPCA INDEX nova base = 100
-
-fig.ipca.index <- function(data, date)
-{
-newdata <- normalize(data, date)
-
-dygraph(newdata, main=paste0("IPCA (",date, "=100)" ) )%>% 
-    dySeries(label="IPCA") %>%
-    dyEvent("2002-01-1", "Lula", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyLimit(0,   color = "black") %>%
-    dyLimit(100, color = "black") %>%
-    dyOptions(axisTickSize = 5, includeZero = TRUE)
-}
-
-#######################################################
-# PLOT IPCA VARS
-fig.ipca <- function(data)
-{
-ret1 <- ret1.m(data)
-ret2 <- ret12(data)
-
-newdata  <- ts.intersect(ret1, ret2)         # ac 12 meses (ret t/t-12)
-rownames(newdata) <- names(ret2)
-colnames(newdata) <- c("t/t-1", "t/t-12")
-
-dygraph(newdata, main = "IPCA" ) %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyBarSeries("t/t-1") %>% 
-    dyOptions(includeZero = TRUE)
-}
-
-#######################################################
-# IPCA TABS
-
-#######################################################
-# TAB IPCA
-
-#######################################################
-tab.ipca <- function(data, year)
-{
-ret1 <- ret1.m(data);
-ret2 <- ret12(data) 
-ret3 <- ac.yr(data, year)
-
-newdata  <- c(tail(ret1, 13), ret3, tail(ret2,1) )
-names(newdata) <-  c(names(tail(ret1,13) ), "AC ANO", "AC 12" )
-    
-return(newdata)
-}
-
-#######################################################
-tab.ipca1 <- function(data, year)
-{
-ret1 <- ret1.m(data)
-ret2 <- ret12(data) 
-ret3 <- ac.yr(data, year)
-
-id1 <- grep(year, names(ret1) )
-id2 <- grep(year, names(ret2) )
-
-newdata  <- c(ret1[id1], ret3, tail(ret2[id2],1) )
-names(newdata) <-  c(names(ret1[id1] ), "AC ANO", "AC 12" )
-    
-return(newdata)
-}
-
-#######################################################
-# PLOT IND
-fig.ind <- function(data)
-{
-data1 <- data$ac12; data2 <- ret12(data$index)
-
-newdata  <- ts.intersect(data1, data2)         # ac 12 meses (ret t/t-12)
-rownames(newdata) <- names(data1)
-colnames(newdata) <- c("AC12", "t/t-12")
-
-# tmp <- window(newdata, start = c(2008,1), end = c(2012,12))
-
-dygraph(newdata, main = "Industrial Production" ) %>%
-    dyEvent("2002-01-1", "Lula",  labelLoc = "bottom") %>%
-    dyEvent("2008-10-1", "Crise", labelLoc = "bottom") %>%
-    dyEvent("2010-01-1", "Dilma", labelLoc = "bottom") %>%
-    dyEvent("2016-09-1", "Temer", labelLoc = "bottom") %>%
-    dyEvent("2019-01-1", "Bolsonaro", labelLoc = "bottom") %>%
-    dyBarSeries("t/t-12") %>% 
-    dyOptions(includeZero = TRUE)
-}
-
-#######################################################
-# TAB IND
-tab.ind <- function(data, year)
-{
-
-ret1 <- ret12(data$index)     # t/t-12
-ret2 <- data$ac12             # AC 12 meses
-ret3 <- ac.yr(data$index, year)     # AC ano
-
-id <- grep(year, names(ret1) )
-
-newdata  <- c(tail(ret1, 13), tail(ret3,1), tail(ret2,1) )
-names(newdata) <-  c(names(tail(ret1,13) ), "AC ANO", "AC 12" )
-
-return(newdata)
-}
-
-####################################################
-#

@@ -3,12 +3,8 @@ source("../funs/download.R")
 
 #################################################
 # GDP
-
-# download
-download.cnt.series()
-# load file
+download.gpd()
 gdp <- load.gdp()
-saveRDS(gdp, "../data/GDP.rds")
 
 #######################################
 # SELIC

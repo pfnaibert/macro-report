@@ -1,334 +1,34 @@
-####################################################
-# QUARTER FUNCTIONS
-
-####################################################
-# QUARTER DATES
-date.quarter <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-
-# dates as numeric for TS
-Y <- as.numeric(substring(dates, 1,4))
-Q <- as.numeric(substring(dates, 7,7)) 
-
-# Time Series
-newdata <- ts(data, start = c(Y[1], Q[1]), end = c(Y[T], Q[T]), frequency = 4)
-return(newdata)
-}
-
-####################################################
-# ac4Q # QUARTER
-sum4 <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-tmp <- rep(NA, (T-3)); names(tmp) <- dates[-seq(1:3)]
-
-for(i in 1:(T-3))
-{
-    w1     <- seq(i,i+4-1)
-    tmp[i] <- sum(data[w1])
-}
-
-return(date.quarter(tmp))
-}
-
-####################################################
-# ret (t/t-1) # QUARTER
-ret1.q <- function(data)
-{
-T <- NROW(data)
-tmp1 <- data[-1]; tmp2 <- data[-T]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret[-1]) <- dates
-
-return(date.quarter(ret))
-}
-
-####################################################
-# ret (t/t-4) # QUARTER
-ret4 <- function(data)
-{
-T    <- NROW(data); dates <- names(data)
-
-id1  <- seq(1,4); id2 <- seq(T-3,T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret[-4]) <- dates
-
-return(date.quarter(ret))
-}
-
-####################################################
-# y(t) - y(t-4) # QUARTER
-dif4 <- function(data)
-{
-T    <- NROW(data)
-
-id1  <- seq(1,4); id2 <- seq(T-3,T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-dif  <- tmp1 - tmp2
-names(dif[-3]) <- dates
-
-return(date.quarter(dif))
-}
-
-####################################################
-# MONTH DATES
-date.month <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-Y <- as.numeric(substring(dates, 1,4))
-M <- as.numeric(substring(dates, 6,7)) 
-newdata <- ts(data, start = c(Y[1], Q[1]), end = c(Y[T], Q[T]), frequency = 12)
-return(newdata)
-}
-
-####################################################
-# MONTH
-date.month.SIDRA <- function(data)
-{
-# IPCA DATES (%B %Y) to %Y:%m
-# format(Sys.Date(), "%B/%Y")
-# format(Sys.Date(), "%Y:%m")
-    
-# numeric values
-data2 <- as.numeric(as.character(data[,-1]))
-K     <- NROW(data)
-
-# dates
-dates <- data[,1]
-m1 <- c("janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro")
-m2 <- c("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12")
-
-for(i in 1:12)
-{
-dates <- gsub(m1[i], m2[i], dates )
-}
-
-M <- substring(dates, 1,2); M1 <- as.numeric(M)
-Y <- substring(dates, 4,7); Y1 <- as.numeric(Y) 
-names(data2) <- paste0(Y, ":", M)
-
-# newdata
-newdata <- ts(data2, start=c(Y1[1], M1[1]), end=c(Y1[K], M1[K]), frequency=12 )
-
-return(newdata)
-}
-
-####################################################
-date.month.sgs <- function(data)
-{
-# SGS DATES ("%d/%m/%Y") to  "%Y:%m"
-# format(Sys.Date(), "%d/%m/%Y")
-# format(Sys.Date(), "%Y:%m")
-
-data1 <- data[,1]
-data2 <- as.numeric(data[,2]); T <- NROW(data2)
-
-M <- substring(data1, 4,5); M1 <- as.numeric(M)
-Y <- substring(data1, 7,10); Y1 <- as.numeric(Y) 
-names(data2) <- paste0(Y, ":", M)
-
-newdata <- ts(data2, start=c(Y1[1], M1[1]), end=c(Y1[T], M1[T]), frequency=12 )
-
-return(newdata)
-}
-
-####################################################
-# sum 12 meses # MONTH
-sum12 <- function(data)
-{
-T     <- NROW(data); dates <- names(data)
-sum.12 <- rep(NA, T-11)
-
-for(i in 1:(T-11))
-{
-    w1       <- seq(i,i+12-1)
-    sum.12[i] <- sum(data[w1])/12
-}
-names(sum.12) <- dates[-c(1:11)]
-
-return(date.month(sum.12) )
-}
-
-####################################################
-# ret t/t-12 # MONTH
-ret12 <- function(data)
-{
-T    <- NROW(data); dates <- names(data)
-
-id1  <- seq(1:12); id2  <- seq(T-11, T)
-tmp1 <- data[-id1]; tmp2 <- data[-id2]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret) <- dates[-id1]
-
-return(date.month(ret) )
-}
-
-####################################################
-# ret t/t-1 # MONTH
-ret1.m <- function(data)
-{
-T <- NROW(data); dates <- names(data)
-
-tmp1 <- data[-1]; tmp2 <- data[-T]
-ret  <- 100*(tmp1/tmp2 - 1)
-names(ret) <- dates[-1]
-
-return(date.month(ret) )
-}
-
-####################################################
-# ret anualizado (ret)^per
-ret.an <- function(ret, per)
-{
-ret.an <- ((1+ret/100)^per - 1)*100
-return(ret.an)
-}
-
 #######################################################
-# AC ANO
-ac.yr <- function(index, year)
+# TAB NOMINAL GDP
+tab.gdp.level <- function(data, year, qtr)
 {
-id <- grep(year, names(index) )
-return(100*(index[tail(id,1)]/index[(head(id,1)-1)] -1 ) )
+# Nominal GDP in trillions of current reais 
+
+newdata <- as.numeric(data)
+
+# Nominal
+yq1   <- tail(newdata,1)/10^6       # current quarter
+yq2   <- head(tail(newdata,5),1)/10^6 # current quarter of last year
+yq4   <- sum(tail(newdata,4))/10^6  # current sum of the last 4 quarters
+
+# subset dates
+dates <- names(data)
+
+id1 <- grep(paste(year), dates)   # current year
+id2 <- grep(paste(year-1), dates) # previous year 
+
+yt1 <- sum(newdata[id1])/10^6 # current year
+yt2 <- sum(newdata[id2])/10^6 # previous year 
+
+# bind values
+tab1 <- c(yq1, yq2, 4*yq1, yq4, yt2)
+names(tab1) <- c("current quarter", "t-4", "current quarter x4", "last 4 quarters", "last year")
+
+# tab1 <- c(y2018, y2019, 2*y2019)
+# names(tab1) <- c(paste(year-1), paste(year), paste(year, "2"))
+
+return(t(tab1))
 }
-
-####################################################
-# 
-fun.subserie <- function(data, pat)
-{
-id      <- grep(pat, names(data))
-newdata <- data[id]
-return(newdata)
-}
-
-####################################################
-coef.lin <- function(data)
-{
-# data is NOT in LOG
-T <- NROW(data); t1 <- seq(1, T)
-
-# But the regression IS in LOG    
-reg <- lm(log(data)~t1)
-return(coef(reg))
-}
-
-####################################################
-trend.lin <- function(data)
-{
-# data is NOT in LOG
-T <- NROW(data); t1 <- seq(1, T); 
-
-# But the regression IS in LOG    
-reg   <- lm(log(data)~t1)    # log linear
-
-# answers are NOT in LOG    
-t1 <- exp(date.quarter(reg$fitted.values))
-c1 <- data-t1
-c2 <- c1/t1
-
-# Growth Gap
-g  <- ret1.q(t1)
-gg <- ret1.q(data) - g
-
-return(list("fit"=t1, "dif"=c1, "pct"=c2, "g"=g, "gg"=gg)) 
-}
-
-####################################################
-trend.quad <- function(data)
-{
-
-# data is NOT in LOG
-T <- NROW(data); t1 <- seq(1, T); t2 <- t1^2
-
-# But the regression IS in LOG    
-reg <- lm(log(data)~t1+t2) # quad
-
-# answers are NOT in LOG    
-t1 <- exp(date.quarter(reg$fitted.values))
-c1 <- data-t1
-c2 <- c1/t1
-
-# Growth Gap
-g  <- ret1.q(t1)
-gg <- ret1.q(data) - g
-
-return(list("fit"=t1, "dif"=c1, "pct"=c2, "g"=g, "gg"=gg)) 
-}
-
-#############################################
-# HF # Hamilton Filter
-trend.hf <- function(data, h=8, p=4)
-
-{
-# data is NOT in LOG
-T <- NROW(data); y <- 100*log(data)
-
-# But the regression IS in LOG    
-y.00 <- y[(1+h+p-1):(T-0)] # y(t+h) or y(t)
-
-x <- matrix(NA, nrow = length(y.00), ncol = p)
-for(i in 1:p)
-{
-x[,i] <- y[i:(T-h-(p-i))]  # y(t) or y(t-h-(p-i)) for i=1, ..., p
-}
-
-reg <- lm(y.00 ~ x)
-
-# answers are NOT in LOG    
-t1 <- date.quarter(reg$fitted.values)
-c1 <- date.quarter(reg$residuals)
-
-#
-u <- date.quarter(y.00 - x[,p]) # y(t) - y(t-h)
-
-# Growth Gap
-g  <- ret1.q(exp(t1/100))
-gg <- ret1.q(data) - g
-
-return(list("fit"=t1, "c1"=c1, "u"=u, "g"=g, "gg"=gg)) 
-}
-
-####################################################
-trend.hpf <- function(data, lambda)
-{
-require(mFilter)
-
-# data is NOT in LOG
-T <- NROW(data); t1 <- seq(1, T); t2 <- t1^2
-
-# But the filter IS in LOG    
-hpf <- hpfilter(log(data), freq = lambda)
-names(hpf$trend) <- names(data)
-
-# answers are NOT in LOG    
-t1 <- exp(hpf$trend)
-c1 <- data-t1
-c2 <- c1/t1
-
-# Growth Gap
-g  <- ret1.q(t1)
-gg <- ret1.q(data) - g
-
-return(list("fit"=t1, "dif"=c1, "pct"=c2, "g"=g, "gg"=gg)) 
-}
-
-####################################################
-normalize <- function(data, date)
-{
-T <- NROW(data)
-den <- rep(data[date], T)
-newdata <- 100*data/den
-return(newdata)
-}
-
-####################################################
-standard <- function(data)
-{
-return((data-mean(data))/sd(data))
-}
-
 
 ####################################################
 # GDP FIGS
@@ -457,30 +157,6 @@ dygraph(tmp,
 
 ####################################################
 # GDP TABS
-
-#######################################################
-# TAB NOMINAL GDP
-tab.gdp.level <- function(data)
-{
-# Nominal GDP in trillions of current reais 
-
-# subset dates
-dates <- names(data)
-id.2018 <- grep("2018", dates)
-id.2019 <- grep("2019", dates)
-
-# Nominal
-yq1   <- tail(data,1)/10^6       # last quarter
-yq4   <- sum(tail(data,4))/10^6  # last 4 quarters
-y2018 <- sum(data[id.2018])/10^6 # 2018 
-y2019 <- sum(data[id.2019])/10^6 # 2019 so far
-
-# bind values
-tab1 <- c(y2018, yq4, yq1, 4*yq1, y2019, 2*y2019)
-names(tab1) <- c("2018", "4 quarters", "last quarter", "last quarter x4","2019", "2019 x2")
-
-return(t(tab1))
-}
 
 #######################################################
 # TAB GDP Growth
