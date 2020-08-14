@@ -14,6 +14,16 @@ This repository contains the functions to webscrape data from brazilian
 public data of economic variables and automatically make reports based
 on that data.
 
+## Packages
+
+``` bash
+pacman -S r pandoc pandoc--citeproc
+```
+
+``` r
+install.packages(c("stargazer", "xtable", "dygraphs", "rmarkdown"))
+```
+
 ## Functions
 
 The functions can be found [here](./funs/)
@@ -21,9 +31,18 @@ The functions can be found [here](./funs/)
 ## URLS
 
   - [bacen](https://www.bcb.gov.br/pt-br/)
+
   - [ipea](http://www.ipea.gov.br/portal/)
+
   - [ibge](https://www.ibge.gov.br/)
+
   - [fee](https://www.fee.rs.gov.br/)
+
+  - [bacen-estatisticas](https://www.bcb.gov.br/estatisticas)
+
+  - [bacen-tabelas-especiais](https://www.bcb.gov.br/estatisticas/tabelasespeciais)
+
+  - [bacen-ri](https://www.bcb.gov.br/publicacoes/ri)
 
 ## Databases
 
