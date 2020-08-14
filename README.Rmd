@@ -1,16 +1,30 @@
---- 
+---
 title: MACRO REPORT
 output: github_document
-author: "Paulo Ferreira Naibert" 
---- 
+author: "Paulo Ferreira Naibert"
+---
+
+Clone this Repository:
+
+```bash
+git clone https://github.com/pfnaibert/macro-report.git
+```
 
 ## Overview
 This repository contains the functions to webscrape data from brazilian public data of economic variables and automatically make reports based on that data.
 
+## Packages
+
+```bash
+pacman -S r pandoc pandoc--citeproc
+```
+
+```r
+install.packages(c("stargazer", "xtable", "dygraphs", "rmarkdown"))
+```
 
 ## Functions
 The functions can be found [here](./funs/)
-
 
 ## URLS
 
@@ -18,6 +32,10 @@ The functions can be found [here](./funs/)
 - [ipea](http://www.ipea.gov.br/portal/)
 - [ibge](https://www.ibge.gov.br/)
 - [fee](https://www.fee.rs.gov.br/)
+
+- [bacen-estatisticas](https://www.bcb.gov.br/estatisticas)
+- [bacen-tabelas-especiais](https://www.bcb.gov.br/estatisticas/tabelasespeciais)
+- [bacen-ri](https://www.bcb.gov.br/publicacoes/ri)
 
 ## Databases
 
@@ -38,8 +56,6 @@ The functions can be found [here](./funs/)
 | 4389 | Taxa de juros - CDI                          | anualizada base 252	% a.a.	                | D	        | 06/03/1986   | 26/02/2018 | BCB-Demab	  |
 | 4391 | Taxa de juros - CDI                          | acumulada no mês	% a.m.	                | M	        | 31/07/1986   | fev/2018	| BCB-Demab	  |
 | 4392 | Taxa de juros - CDI                          | acumulada no mês anualizada base 252 % a.a. | M	        | 31/07/1986   | fev/2018	| BCB-Demab	  |
-
-
 
 ## USAGE
 
