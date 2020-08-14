@@ -30,19 +30,14 @@ The functions can be found [here](./funs/)
 
 ## URLS
 
-  - [bacen](https://www.bcb.gov.br/pt-br/)
-
   - [ipea](http://www.ipea.gov.br/portal/)
-
   - [ibge](https://www.ibge.gov.br/)
-
   - [fee](https://www.fee.rs.gov.br/)
 
-  - [bacen-estatisticas](https://www.bcb.gov.br/estatisticas)
-
-  - [bacen-tabelas-especiais](https://www.bcb.gov.br/estatisticas/tabelasespeciais)
-
-  - [bacen-ri](https://www.bcb.gov.br/publicacoes/ri)
+BACEN - [bacen](https://www.bcb.gov.br/pt-br/) -
+[bacen-estatisticas](https://www.bcb.gov.br/estatisticas) -
+[bacen-tabelas-especiais](https://www.bcb.gov.br/estatisticas/tabelasespeciais)
+- [bacen-ri](https://www.bcb.gov.br/publicacoes/ri)
 
 ## Databases
 
