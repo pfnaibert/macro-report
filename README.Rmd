@@ -27,12 +27,9 @@ install.packages(c("stargazer", "xtable", "dygraphs", "rmarkdown"))
 The functions can be found [here](./funs/)
 
 ## URLS
-
 - [ipea](http://www.ipea.gov.br/portal/)
 - [ibge](https://www.ibge.gov.br/)
 - [fee](https://www.fee.rs.gov.br/)
-
-BACEN
 - [bacen](https://www.bcb.gov.br/pt-br/)
 - [bacen-estatisticas](https://www.bcb.gov.br/estatisticas)
 - [bacen-tabelas-especiais](https://www.bcb.gov.br/estatisticas/tabelasespeciais)
